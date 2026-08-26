@@ -23,7 +23,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Autogenerate labels based on the PR title
-  pr_auto_labeling:  # ToDo: Needs refactoring as far as v6 is released. See https://github.com/release-drafter/release-drafter/issues/1216
+  pr_auto_labeling:
     name: Automatically label the PR
     permissions:
       pull-requests: write
@@ -31,12 +31,10 @@ jobs:
     needs:
       - pr_title_check
     steps:
-      - uses: release-drafter/release-drafter@v6
+      - uses: release-drafter/release-drafter/autolabeler@34d80673e067bdc0c24568d3af899c216adcfaa9 # v7.7.0
         with:
-          disable-releaser: true
           config-name: pr_autolabeling_config.yml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   pr_label_check:
     name: Check that the PR is labeled

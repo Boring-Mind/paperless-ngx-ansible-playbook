@@ -58,11 +58,9 @@ jobs:
         run: ansible-galaxy role import --api-key ${{ secrets.GALAXY_TOKEN }} $(echo ${{ github.repository }} | cut -d/ -f1) $(echo ${{ github.repository }} | cut -d/ -f2)
 
       - name: Publish the release notes
-        uses: release-drafter/release-drafter@v6
+        uses: release-drafter/release-drafter@34d80673e067bdc0c24568d3af899c216adcfaa9 # v7.7.0
         with:
           publish: ${{ steps.check-version.outputs.tag != '' }}
           tag: ${{ steps.check-version.outputs.tag }}
           config-name: release_drafting_config.yml
-          disable-autolabeler: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_RELEASE_TOKEN }}
+          token: ${{ secrets.REPO_RELEASE_TOKEN }}
