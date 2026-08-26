@@ -14,7 +14,6 @@ name: Code Testing
       - "!.github/**/*test*.yml"
       - "!.github/**/*constraints*.txt"
       - "!.github/**/*requirements*.txt"
-      - "!.github/**/*env*.txt"
       # - "!.github/**/*release*.yml"
   schedule:
     - cron: "0 7 * * 5"  # At 07:00 on Friday
@@ -50,17 +49,10 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v6
 
-      - name: Load environment vars
-        id: dotenv
-        uses: falti/dotenv-action@v1.1.5
-        with:
-          path: .github/workflows/env_vars.txt
-          log-variables: true
-
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: ${{ steps.dotenv.outputs.PYTHON_SETUP_VERSION }}
+          python-version: "3.12"
 
       - name: Upgrade pip
         run: |

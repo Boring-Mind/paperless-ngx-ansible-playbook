@@ -19,17 +19,10 @@ jobs:
         with:
           fetch-depth: 2  # Last two commits for salsify/action-detect-and-tag-new-version
 
-      - name: Load environment vars
-        id: dotenv
-        uses: falti/dotenv-action@v1.1.5
-        with:
-          path: .github/workflows/env_vars.txt
-          log-variables: true
-
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: ${{ steps.dotenv.outputs.PYTHON_SETUP_VERSION }}
+          python-version: "3.12"
 
       - name: Upgrade pip
         run: |
