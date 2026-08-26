@@ -17,7 +17,7 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 2  # Last two commits for salsify/action-detect-and-tag-new-version
+          fetch-depth: 2  # Last two commits for version-change detection
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -37,11 +37,18 @@ jobs:
       - name: Detect and tag new version
         id: check-version
         if: steps.check-parent-commit.outputs.sha
-        uses: salsify/action-detect-and-tag-new-version@v2
-        with:
-          tag-template: "{VERSION}"
-          version-command: |
-            cat current-version.txt
+        run: |
+          new_version=$(tr -d '[:space:]' < current-version.txt)
+          old_version=$(git show HEAD^:current-version.txt 2>/dev/null | tr -d '[:space:]' || true)
+          if [[ -z "$new_version" || "$new_version" == "$old_version" ]]; then
+            echo "tag=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$new_version" -m "Released version $new_version"
+          git push origin "$new_version"
+          echo "tag=$new_version" >> "$GITHUB_OUTPUT"
 
       - name: Install Ansible
         run: |
