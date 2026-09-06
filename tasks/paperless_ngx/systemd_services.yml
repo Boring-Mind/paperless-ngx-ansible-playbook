@@ -13,7 +13,33 @@
     - - { option: User, value: "{{ paperless_ngx_system_user }}" }
       - { option: Group, value: "{{ paperless_ngx_system_group }}" }
       - { option: WorkingDirectory, value: "{{ paperless_ngx_dir_installation }}/src" }
-      - { option: ProtectSystem, value: full }
+      - { option: ProtectSystem, value: "full" }
+      - { option: ProtectHome, value: "yes" }
+      # Limit access to temporary directories such as /tmp and /var/tmp by creating a new namespace
+      # isolated to paperless only.
+      - { option: PrivateTmp, value: "yes" }
+      # Service couldn't trigger a PC reboot.
+      - { option: CapabilityBoundingSet, value: "~CAP_SYS_BOOT" }
+      # Do not allow service to change systems' clock
+      - { option: ProtectClock, value: "yes" }
+      # Do not allow loading kernel modules
+      - { option: ProtectKernelModules, value: "yes" }
+      # Don't allow changes to sysctl settings
+      - { option: ProtectKernelTunables, value: "yes" }
+      # No access to kernel log ring buffer
+      - { option: ProtectKernelLogs, value: "yes" }
+      # Restricts information from /proc that not directly associated with process management and introspection
+      - { option: ProcSubset, value: "pid" }
+      # No access to information about other users in /proc
+      - { option: ProtectProc, value: "invisible" }
+      # Do not allow changing the hostname
+      - { option: ProtectHostname, value: "yes" }
+      # Only allow the usage of system calls for own hardware platform.
+      - { option: SystemCallArchitectures, value: "native" }
+      # Define an allow-list filter with default system calls.
+      - { option: SystemCallFilter, value: "@system-service" }
+      # Block mount, reboot and changing system clock system calls.
+      - { option: SystemCallFilter, value: "~@clock @mount @reboot" }
       - { option: NoNewPrivileges, value: "true" }
       - { option: PrivateUsers, value: "true" }
       - { option: PrivateDevices, value: "true" }
