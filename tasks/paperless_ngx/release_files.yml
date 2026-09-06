@@ -21,7 +21,7 @@
     state: directory
     owner: "{{ paperless_ngx_system_user }}"
     group: "{{ paperless_ngx_system_group }}"
-    mode: "750"
+    mode: "0750"
   loop: "{{ paperless_ngx_dir_force_permission_include | difference(paperless_ngx_dir_force_permission_exclude) }}"
 
 - name: Check if tempdir exists
@@ -41,7 +41,7 @@
         state: directory
         owner: "{{ paperless_ngx_system_user }}"
         group: "{{ paperless_ngx_system_group }}"
-        mode: "750"
+        mode: "0750"
 
     - name: Create target temporary directory
       become: true
