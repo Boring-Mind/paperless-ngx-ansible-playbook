@@ -51,8 +51,8 @@
       - liblept5
   when: >-
     not (
-      (ansible_distribution == 'Debian' and ansible_distribution_version is version('13', '>=')) or
-      (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('25.04', '>='))
+      (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_version'] is version('13', '>=')) or
+      (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version'] is version('25.04', '>='))
     )
 
 - name: Install libleptonica6 for Debian 13 Trixie and Ubuntu 25.04 and newer
@@ -62,8 +62,8 @@
       - libleptonica6
       - libleptonica-dev
   when: >-
-    (ansible_distribution == 'Debian' and ansible_distribution_version is version('13', '>=')) or
-    (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('25.04', '>='))
+    (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_version'] is version('13', '>=')) or
+    (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version'] is version('25.04', '>='))
 
 - name: Install ocr languages
   become: true

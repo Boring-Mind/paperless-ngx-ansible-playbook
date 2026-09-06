@@ -435,8 +435,8 @@
     backrefs: true
   when: >-
     not (
-      (ansible_distribution == 'Debian' and ansible_distribution_version is version('13', '>=')) or
-      (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('25.04', '>='))
+      (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_version'] is version('13', '>=')) or
+      (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version'] is version('25.04', '>='))
     )
   tags: pngx_conf_gs
   notify: Restart paperless completely
@@ -449,7 +449,7 @@
     line: \1<policy domain="coder" rights="read|write" pattern="PDF" />
     backrefs: true
   when: >-
-    (ansible_distribution == 'Debian' and ansible_distribution_version is version('13', '>=')) or
-    (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('25.04', '>='))
+    (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_version'] is version('13', '>=')) or
+    (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version'] is version('25.04', '>='))
   tags: pngx_conf_gs
   notify: Restart paperless completely
