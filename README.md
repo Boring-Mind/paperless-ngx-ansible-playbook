@@ -66,7 +66,8 @@ The following sections are devided into:
 | `paperless_ngx_dependency_install_tmp_dir` | /tmp/ | Directory for temporary dependency installation files |
 | `paperless_ngx_dir_force_permission_exclude` | [] | Which directories should be skipped from permission check/setting. See [docs](docs/DIRECTORY_PERMISSION_CHECK.md). |
 | `paperless_ngx_dir_installation` | /opt/paperless-ngx | The directory where paperless-ngx static installation files are written to. |
-| `paperless_ngx_dir_runtime_data` | /var/lib/paperless-ngx | The directory where the runtime data will be stored. |
+| `paperless_ngx_dir_python` | /opt/python | The directory where Python binaries will be stored. |
+| `paperless_ngx_dir_runtime_data` | /var/lib/paperless-ngx | The directory where the runtime data will be stored. Warning: it shouldn't be in any home directory, since Paperless services are not allowed to access it. |
 | `paperless_ngx_dir_virtualenv` | "{{ paperless_ngx_dir_installation }}/.venv" | The directory for the needed python venv. |
 | `paperless_ngx_jbig2enc_enabled` | true | Whether to install and use jbig2enc for OCRmyPDF. |
 | `paperless_ngx_jbig2enc_lossy` | false | Run jbig2enc in lossy mode or not. |

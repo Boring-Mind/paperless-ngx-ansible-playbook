@@ -33,12 +33,23 @@
         path: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
         state: absent
 
+- name: Create a folder for Python binaries
+  become: true
+  ansible.builtin.file:
+    path: /opt/python
+    owner: "{{ paperless_ngx_system_user }}"
+    group: "{{ paperless_ngx_system_group }}"
+    mode: "0755"
+    state: directory
+
 - name: Install python via uv
   become: true
   become_user: "{{ paperless_ngx_system_user }}"
   ansible.builtin.command:
     # --upgrade will update the existing Python installation to the latest patch version.
     cmd: "uv python install {{ paperless_ngx_python_version_short }} --no-progress --color=never --upgrade"
+  environment:
+    UV_PYTHON_INSTALL_DIR: "{{ paperless_ngx_dir_python }}"
   register: _uv_python_install
   # When uv will correctly install or update Python, it will print this line:
   # "Installed Python 3.14.7 in 946ms".

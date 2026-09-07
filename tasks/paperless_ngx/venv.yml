@@ -23,6 +23,8 @@
       --python {{ paperless_ngx_python_version_short }}
       --no-python-downloads --no-progress --color=never
     chdir: "{{ paperless_ngx_dir_installation }}"
+  environment:
+    UV_PYTHON_INSTALL_DIR: "{{ paperless_ngx_dir_python }}"
   register: _uv_install
   changed_when: >-
     ('Installed' in _uv_install.stderr)
