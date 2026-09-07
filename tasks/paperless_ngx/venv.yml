@@ -24,12 +24,12 @@
     cmd: >-
       uv sync --frozen --no-dev --extra postgres --extra webserver
       --python {{ paperless_ngx_python_version_short }}
-      --no-build --no-python-downloads --no-progress --color=never
+      --no-python-downloads --no-progress --color=never
     chdir: "{{ paperless_ngx_dir_installation }}"
   environment:
     UV_PYTHON_INSTALL_DIR: "{{ paperless_ngx_dir_python }}"
     # Increasing amount of retries, since sometimes github or pypi fail to respond in time.
-    UV_HTTP_RETRIES: "5"
+    UV_HTTP_RETRIES: "7"
   register: _uv_install
   changed_when: >-
     ('Installed' in _uv_install.stderr)
