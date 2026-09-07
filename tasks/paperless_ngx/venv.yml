@@ -14,29 +14,19 @@
     state: absent
   when: not _venv_python_bin.stat.exists
 
-- name: Set up python virtualenv
-  become: true
-  become_user: "{{ paperless_ngx_system_user }}"
-  ansible.builtin.command:
-    # --seed option also installs pip into created venv.
-    cmd: uv venv --no-python-downloads --no-progress --color=never --seed
-    chdir: "{{ paperless_ngx_dir_installation }}"
-    creates: "{{ paperless_ngx_dir_virtualenv }}"
-
 - name: Install paperless-ngx python requirements
   become: true
   become_user: "{{ paperless_ngx_system_user }}"
   ansible.builtin.command:
-    # --strict means that uv will validate venv after this command, to check
-    # if there are some packages with missing dependencies or any other problems.
-    # --exact means that uv will remove any packages from venv
-    # that are not mentioned in requirements.txt
-    cmd: uv pip install -r requirements.txt --no-python-downloads --no-progress --color=never --strict --exact
+    cmd: >-
+      uv sync --frozen --no-dev --extra postgres --extra webserver
+      --python {{ paperless_ngx_python_version_short }}
+      --no-python-downloads --no-progress --color=never
     chdir: "{{ paperless_ngx_dir_installation }}"
-  register: _uv_pip_install
+  register: _uv_install
   changed_when: >-
-    ('Installed' in _uv_pip_install.stderr)
-    or ('Uninstalled' in _uv_pip_install.stderr)
+    ('Installed' in _uv_install.stderr)
+    or ('Uninstalled' in _uv_install.stderr)
 
 - name: Set ownership and permissions on pngx venv
   become: true
