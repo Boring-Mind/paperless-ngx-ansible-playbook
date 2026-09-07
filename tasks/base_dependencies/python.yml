@@ -1,12 +1,28 @@
 ---
-- name: Install uv
+- name: Download uv installer
   become: true
   become_user: "{{ paperless_ngx_system_user }}"
-  ansible.builtin.pip:
-    name: uv
-    # Install it globally
-    break_system_packages: true
-    state: latest
+  ansible.builtin.get_url:
+    url: https://astral.sh/uv/install.sh
+    dest: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
+    mode: "0700"
+  register: _uv_installer
+
+- name: Install uv system-wide
+  become: true
+  ansible.builtin.command:
+    cmd: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
+    creates: /usr/local/bin/uv
+  environment:
+    UV_INSTALL_DIR: /usr/local/bin
+    UV_NO_MODIFY_PATH: "1"
+    UV_UNMANAGED_INSTALL: /usr/local/bin
+
+- name: Remove uv installer script
+  become: true
+  ansible.builtin.file:
+    path: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
+    state: absent
 
 - name: Install python via uv
   become: true
