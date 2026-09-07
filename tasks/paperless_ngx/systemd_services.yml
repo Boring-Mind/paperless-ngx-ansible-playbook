@@ -19,7 +19,7 @@
       # isolated to paperless only.
       - { option: PrivateTmp, value: "yes" }
       # Service couldn't trigger a PC reboot.
-      - { option: CapabilityBoundingSet, value: "~CAP_SYS_BOOT" }
+      # - { option: CapabilityBoundingSet, value: "~CAP_SYS_BOOT" }
       # Do not allow service to change systems' clock
       - { option: ProtectClock, value: "yes" }
       # Do not allow loading kernel modules

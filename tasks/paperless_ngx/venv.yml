@@ -1,44 +1,48 @@
 ---
-# upstream virtualenv in Ubuntu 20.04 is broken
-# https://github.com/pypa/virtualenv/issues/1873
-- name: Install python virtualenv
-  become: true
-  become_user: "{{ paperless_ngx_system_user }}"
-  ansible.builtin.pip:
-    name: virtualenv
-    extra_args: --upgrade --user
-    executable: "{{ paperless_ngx_dir_python }}/bin/pip{{ paperless_ngx_python_version_short }}"
+- name: Check virtualenv python version
+  ansible.builtin.stat:
+    path: "{{ paperless_ngx_dir_virtualenv }}/bin/python{{ paperless_ngx_python_version_short }}"
+  register: _venv_python_bin
 
-- name: Install latest pip
+- name: Drop venv folder
   become: true
   become_user: "{{ paperless_ngx_system_user }}"
-  ansible.builtin.pip:
-    name: pip
-    virtualenv: "{{ paperless_ngx_dir_virtualenv }}"
-    virtualenv_python: "{{ paperless_ngx_dir_python }}/bin/python{{ paperless_ngx_python_version_short }}"
-    virtualenv_command: "{{ paperless_ngx_dir_python }}/bin/python{{ paperless_ngx_python_version_short }} -m virtualenv"
-    extra_args: --upgrade
+  ansible.builtin.file:
+    # This task will remove venv folder if either we want to update Python
+    # to a next major version (like, 3.13 -> 3.14). Or if venv folder doesn't exist.
+    path: "{{ paperless_ngx_dir_virtualenv }}"
+    state: absent
+  when: not _venv_python_bin.stat.exists
+
+- name: Set up python virtualenv
+  become: true
+  become_user: "{{ paperless_ngx_system_user }}"
+  ansible.builtin.command:
+    # --seed option also installs pip into created venv.
+    cmd: uv venv --no-python-downloads --no-progress --color=never --seed
+    chdir: "{{ paperless_ngx_dir_installation }}"
+    creates: "{{ paperless_ngx_dir_virtualenv }}"
 
 - name: Install paperless-ngx python requirements
   become: true
   become_user: "{{ paperless_ngx_system_user }}"
-  ansible.builtin.pip:
-    requirements: "{{ paperless_ngx_dir_installation }}/requirements.txt"
-    virtualenv: "{{ paperless_ngx_dir_virtualenv }}"
-    virtualenv_python: "{{ paperless_ngx_dir_python }}/bin/python{{ paperless_ngx_python_version_short }}"
-    extra_args: --upgrade
-  register: _install_python_requirements
-  until: 'not "ReadTimeoutError" in _install_python_requirements.msg | default("")'
-  retries: 3
-  delay: 60
+  ansible.builtin.command:
+    # --strict means that uv will validate venv after this command, to check
+    # if there are some packages with missing dependencies or any other problems.
+    # --exact means that uv will remove any packages from venv
+    # that are not mentioned in requirements.txt
+    cmd: uv pip install -r requirements.txt --no-python-downloads --no-progress --color=never --strict --exact
+    chdir: "{{ paperless_ngx_dir_installation }}"
+  register: _uv_pip_install
+  changed_when: >-
+    ('Installed' in _uv_pip_install.stderr)
+    or ('Uninstalled' in _uv_pip_install.stderr)
 
 - name: Set ownership and permissions on pngx venv
   become: true
   ansible.builtin.file:
     path: "{{ paperless_ngx_dir_virtualenv }}"
     state: directory
-    # recurse: true
-    # follow: false
     owner: "{{ paperless_ngx_system_user }}"
     group: "{{ paperless_ngx_system_group }}"
     mode: g-w,o-rwx
