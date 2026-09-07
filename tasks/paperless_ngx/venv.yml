@@ -12,6 +12,9 @@
     # to a next major version (like, 3.13 -> 3.14). Or if venv folder doesn't exist.
     path: "{{ paperless_ngx_dir_virtualenv }}"
     state: absent
+  # No log is here to hide a big chunk of removed files,
+  # which makes it easier to track the progress of overall playbook.
+  no_log: true
   when: not _venv_python_bin.stat.exists
 
 - name: Install paperless-ngx python requirements

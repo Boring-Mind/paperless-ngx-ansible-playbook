@@ -4,6 +4,9 @@
   ansible.builtin.file:
     path: "{{ paperless_ngx_dir_installation }}/"
     state: absent
+  # No log is here to hide a big chunk of removed files,
+  # which makes it easier to track the progress of overall playbook.
+  no_log: true
 
 - name: Create paperless-ngx conf directory and set permissions
   become: true
@@ -166,3 +169,6 @@
   ansible.builtin.file:
     path: "{{ _install_tempdir }}"
     state: absent
+  # No log is here to hide a big chunk of removed files,
+  # which makes it easier to track the progress of overall playbook.
+  no_log: true
