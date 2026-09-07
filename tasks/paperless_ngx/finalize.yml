@@ -9,7 +9,7 @@
 
 - name: Check that all services are running
   ansible.builtin.assert:
-    that: _services_state.ansible_facts.services["{{ item.name }}"].state == 'running'
+    that: _services_state.ansible_facts.services[item.name].state == 'running'
   loop: "{{ paperless_ngx_services_list }}"
   when: item.enabled|bool
 
