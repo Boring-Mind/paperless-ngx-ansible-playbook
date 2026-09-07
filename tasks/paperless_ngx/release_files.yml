@@ -77,7 +77,7 @@
 
 - name: Remove docker files from paperless-ngx files
   become: true
-  become_user: "{{ paperless_ngx_system_user }}"
+  become_user: root
   ansible.builtin.file:
     # We don't need Docker-related files, since we use systemd to control paperless instances.
     path: "{{ _install_tempdir }}/paperless-ngx/{{ item.path }}"
@@ -90,7 +90,7 @@
 
 - name: Delete gunicorn configuration file (from versions < 2.15.0)
   become: true
-  become_user: "{{ paperless_ngx_system_user }}"
+  become_user: root
   ansible.builtin.file:
     path: "{{ _install_tempdir }}/paperless-ngx/gunicorn.conf.py"
     state: absent
