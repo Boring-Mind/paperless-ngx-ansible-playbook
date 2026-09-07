@@ -1,29 +1,37 @@
 ---
-- name: Download uv installer
-  become: true
-  become_user: "{{ paperless_ngx_system_user }}"
-  ansible.builtin.get_url:
-    url: https://astral.sh/uv/install.sh
-    dest: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
-    mode: "0700"
-  register: _uv_installer
+- name: Check if uv is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/uv
+  register: _uv_binary
 
-- name: Install uv system-wide
-  become: true
-  ansible.builtin.command:
-    cmd: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
-    creates: /usr/local/bin/uv
-  environment:
-    # Unmanaged install means that uv won't install self updater (for `uv self update` command).
-    # Also it won't change the .profile or .bashrc of the paperless-ngx user. Ansible won't read them anyway,
-    # so this is a desired behavior.
-    UV_UNMANAGED_INSTALL: /usr/local/bin
+- name: Install uv
+  when: not _uv_binary.stat.exists
+  block:
+    - name: Download uv installer
+      become: true
+      become_user: "{{ paperless_ngx_system_user }}"
+      ansible.builtin.get_url:
+        url: https://astral.sh/uv/install.sh
+        dest: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
+        mode: "0700"
+      register: _uv_installer
 
-- name: Remove uv installer script
-  become: true
-  ansible.builtin.file:
-    path: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
-    state: absent
+    - name: Install uv system-wide
+      become: true
+      ansible.builtin.command:
+        cmd: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
+        creates: /usr/local/bin/uv
+      environment:
+        # Unmanaged install means that uv won't install self updater (for `uv self update` command).
+        # Also it won't change the .profile or .bashrc of the paperless-ngx user. Ansible won't read them anyway,
+        # so this is a desired behavior.
+        UV_UNMANAGED_INSTALL: /usr/local/bin
+
+    - name: Remove uv installer script
+      become: true
+      ansible.builtin.file:
+        path: "{{ paperless_ngx_dependency_install_tmp_dir }}/uv-install.sh"
+        state: absent
 
 - name: Install python via uv
   become: true
