@@ -89,6 +89,9 @@
     - path: docker
     - path: Dockerfile
     - path: .dockerignore
+  # No log is here to hide a big chunk of removed files,
+  # which makes it easier to track the progress of overall playbook.
+  no_log: true
   when: not ansible_check_mode
 
 - name: Delete gunicorn configuration file (from versions < 2.15.0)
