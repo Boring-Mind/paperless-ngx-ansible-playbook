@@ -12,6 +12,9 @@
   ansible.builtin.apt:
     update_cache: true
     pkg:
+      # Python build tools - in order to be able to build
+      # wheels for Python libraries, if there are no wheels available.
+      - build-essential
       # paperless-ngx
       - default-libmysqlclient-dev
       - fonts-liberation

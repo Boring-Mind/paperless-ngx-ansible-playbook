@@ -22,7 +22,10 @@
   become_user: "{{ paperless_ngx_system_user }}"
   ansible.builtin.command:
     cmd: >-
-      uv sync --frozen --no-dev --extra postgres --extra webserver
+      uv sync --frozen --no-dev
+      {{ (paperless_ngx_db_type == 'postgresql') | ternary('--extra postgres', omit) }}
+      {{ (paperless_ngx_db_type == 'mariadb') | ternary('--extra mariadb', omit) }}
+      --extra webserver
       --python {{ paperless_ngx_python_version_short }}
       --no-python-downloads --no-progress --color=never
     chdir: "{{ paperless_ngx_dir_installation }}"
